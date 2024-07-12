@@ -1,4 +1,5 @@
 from time import sleep
+from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import os
@@ -47,10 +48,10 @@ while True:
             if company and company.contents[0] != "↳": #ignore multiple listings for the same company
                 if company.contents[0] not in companies: #if this company has not been added to companies list
                     if not firstRun: #ignore the first run which is just for initializing the list
-                        notifyLocal("New intern posting", company.contents[0] + "\n" + url) #remove this if not on Mac
                         notifyEmail(company.contents[0]) #send an email to your specified account
                     companies.append(company.contents[0]) #add the company to the list
         print(companies)
+        print("Current Time =", datetime.now().strftime("%H:%M:%S")) #print current time
         if companies: #if the first run is over and companies were added, begin notification process for new lisitings
             firstRun = False
         sleep(120) #repeat every 2 minutes
