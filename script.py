@@ -1,5 +1,4 @@
 from time import sleep
-from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import os
@@ -35,7 +34,7 @@ load_dotenv(dotenv_path) #load env variables to your system
 email = os.environ.get("EMAILADDRESS") 
 password = os.environ.get("EMAILPASS") #you thought I would hardcode my password???
 
-url = 'https://github.com/Ouckah/Summer2025-Internships/blob/main/README.md'
+url = 'https://github.com/SimplifyJobs/Summer2025-Internships/blob/dev/README.md'
 firstRun = True #var to load in companies list without emailing recepient the first time
 port = 465 #SSL
 companies = [] #stores company names
@@ -45,13 +44,13 @@ while True:
         soup = BeautifulSoup(response, 'html.parser') 
         for row in soup.find_all('tr'): #for each table row on the readme page of this GitHub repo
             company = row.find('td') #find the first table data tag which contains the company name
-            if company and company.contents[0] != "↳": #ignore multiple listings for the same company
-                if company.contents[0] not in companies: #if this company has not been added to companies list
+            if company and company.text != "↳": #ignore multiple listings for the same company
+                if company.text not in companies: #if this company has not been added to companies list
                     if not firstRun: #ignore the first run which is just for initializing the list
-                        notifyEmail(company.contents[0]) #send an email to your specified account
-                    companies.append(company.contents[0]) #add the company to the list
+                        notifyLocal("New intern posting", company.text + "\n" + url) #remove this if not on Mac
+                        notifyEmail(company.text) #send an email to your specified account
+                    companies.append(company.text) #add the company to the list
         print(companies)
-        print("Current Time =", datetime.now().strftime("%H:%M:%S")) #print current time
         if companies: #if the first run is over and companies were added, begin notification process for new lisitings
             firstRun = False
         sleep(120) #repeat every 2 minutes
